@@ -5,6 +5,11 @@
 #
 # Usage:
 #   display-popup -E popup.sh
+#
+# Note:
+#   Add following option to 'choose-tree' to hide popup windows:
+#   -f '#{?#{m:_popup_*,#{session_name}},0,1}'
+#
 
 session="_popup_$(tmux display -p '#{session_id}')"
 window="_popup_$(tmux display -p '#{window_id}')"

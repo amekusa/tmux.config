@@ -6,14 +6,15 @@
 # Usage:
 #   display-popup -E popup.sh
 #
+# Note:
+#   Add following option to 'choose-tree' to hide popup windows:
+#   -f '#{?#{m:_popup_*,#{session_name}},0,1}'
+#
 
 # session name
-session="_popup$(tmux display -p '#{session_id}#{window_id}')"
+session="_popup$(tmux display -p '#{s/[$@]/_/:#{session_id}#{window_id}}')"
 
-if tmux has -t "$session" 2> /dev/null; then
-	# create a new popup window
-	[ "$1" = "new" ] && tmux new-window -Sd -t "$session:"
-else
+if ! tmux has -t "$session" 2> /dev/null; then
 	# 'destroy-unattached' option must be off globally
 	destroy_unattached="$(tmux show-option -gv destroy-unattached)"  # save the current value
 	tmux set -g destroy-unattached off  # turn it off temporarily

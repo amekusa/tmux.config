@@ -16,7 +16,7 @@ session="_popup$(tmux display -p '#{s/[$@]/_/:#{session_id}#{window_id}}')"
 
 # arguments
 case "$1" in
-killall)
+--clear)
 	tmux ls -F '#{session_name}' -f '#{?#{m:_popup_*,#{session_name}},1,0}' | while read -r line; do
 		tmux kill-session -t "$line"
 	done

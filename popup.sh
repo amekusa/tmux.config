@@ -6,36 +6,30 @@
 # Usage:
 #   display-popup -E popup.sh
 #
-# Note:
-#   Add following option to 'choose-tree' to hide popup windows:
-#   -f '#{?#{m:_popup_*,#{session_name}},0,1}'
-#
 
-session="_popup_$(tmux display -p '#{session_id}')"
-window="_popup_$(tmux display -p '#{window_id}')"
+# session name
+session="_popup$(tmux display -p '#{session_id}#{window_id}')"
 
-if ! tmux has -t "$session" 2> /dev/null; then
+if tmux has -t "$session" 2> /dev/null; then
+	# create a new popup window
+	[ "$1" = "new" ] && tmux new-window -Sd -t "$session:"
+else
 	# 'destroy-unattached' option must be off globally
 	destroy_unattached="$(tmux show-option -gv destroy-unattached)"  # save the current value
 	tmux set -g destroy-unattached off  # turn it off temporarily
 
-	# create a session for keeping popup windows alive
-	tmux new-session -d -s "$session" -n "$window"
+	# create a session to store popup windows into
+	tmux new -d -s "$session"
+	tmux set -t "$session" @is_popup 1
 	tmux set -t "$session" destroy-unattached off
-	tmux set -t "$session" automatic-rename off
-	tmux set -t "$session" key-table popup
 	tmux set -t "$session" status off
-	tmux set -t "$session" prefix None
 
 	# restore global 'destroy-unattached' to the original value
 	tmux set -g destroy-unattached "$destroy_unattached"
 fi
 
-# create/select the popup window
-tmux new-window -Sd -t "$session:" -n "$window"
-
-# attach
-exec tmux attach -t "$session:$window"
+# show a popup with the window attached
+exec tmux attach -t "$session"
 
 # Thanks:
 #   https://willhbr.net/2023/02/07/dismissable-popup-shell-in-tmux/

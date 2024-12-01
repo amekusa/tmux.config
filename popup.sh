@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # === TMUX Popup Manager ===
 # github.com/amekusa

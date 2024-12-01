@@ -11,8 +11,9 @@
 #   -f '#{?@is_popup,0,1}'
 #
 
-sid="$(tmux display -p '#{session_id}')"
-wid="$(tmux display -p '#{window_id}')"
+arr=($(tmux display -p '#{session_id} #{window_id}'))
+sid="${arr[0]}"
+wid="${arr[1]}"
 session="_popup_${sid:1}_${wid:1}_"
 
 # arguments

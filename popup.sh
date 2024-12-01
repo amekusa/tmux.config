@@ -8,7 +8,7 @@
 #
 # Note:
 #   Add following option to 'choose-tree' to hide popup windows:
-#   -f '#{?#{m:_popup_*,#{session_name}},0,1}'
+#   -f '#{?@is_popup,0,1}'
 #
 
 sid="$(tmux display -p '#{session_id}')"

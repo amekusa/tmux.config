@@ -27,7 +27,7 @@ clear) # kill all the popup sessions
 gc) # kill orphaned popup sessions
 	tmux ls -F '#{@src_sid} #{@src_wid} #{session_name}' -f '#{@is_popup}' | while read -r line; do
 		arr=($line)  # 0:src_sid, 1:src_wid, 2:session_name
-		windows="$(tmux list-windows -a -F 'x' -f "#{&&:#{==:#{session_id},${arr[0]}},#{==:#{window_id},${arr[1]}}}")"
+		windows="$(tmux lsw -a -F 'x' -f "#{&&:#{==:#{session_id},${arr[0]}},#{==:#{window_id},${arr[1]}}}")"
 		[ -z "$windows" ] && tmux kill-session -t "${arr[2]}"
 	done
 	exit 0

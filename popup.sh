@@ -44,9 +44,9 @@ if ! tmux has -t="$session" 2> /dev/null; then
 	tmux new -d -s "$session"
 
 	# custom session options
-	tmux set -F -t "$session" @src_sid "$sid"
-	tmux set -F -t "$session" @src_wid "$wid"
-	tmux set    -t "$session" @is_popup 1
+	tmux set -t "$session" @src_sid "$sid"
+	tmux set -t "$session" @src_wid "$wid"
+	tmux set -t "$session" @is_popup 1
 
 	# regular session options
 	tmux set -t "$session" destroy-unattached off

@@ -17,13 +17,13 @@ session="_popup_${sid:1}_${wid:1}_"
 
 # arguments
 case "$1" in
---clear)
-	tmux ls -F '#{session_name}' -f '#{?#{m:_popup_*,#{session_name}},1,0}' | while read -r line; do
+clear) # kill all the popup sessions
+	tmux ls -F '#{session_name}' -f '#{@is_popup}' | while read -r line; do
 		tmux kill-session -t "$line"
 	done
-	exit
+	exit 0
 	;;
---gc) # kill orphaned popup sessions
+gc) # kill orphaned popup sessions
 	tmux ls -F '#{@src_sid} #{session_name}' -f '#{@is_popup}' | while read -r line; do
 		arr=($line)  # 0:src_sid, 1:session_name
 		windows="$(tmux list-windows -a -F 'x' -f "#{==:#{session_id},${arr[0]}}")"

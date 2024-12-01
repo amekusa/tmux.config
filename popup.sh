@@ -34,7 +34,7 @@ gc) # kill orphaned popup sessions
 esac
 
 # create the session
-if ! tmux has -t "$session" 2> /dev/null; then
+if ! tmux has -t="$session" 2> /dev/null; then
 	# 'destroy-unattached' option must be off globally
 	destroy_unattached="$(tmux show-option -gv destroy-unattached)"  # save the current value
 	tmux set -g destroy-unattached off  # turn it off temporarily

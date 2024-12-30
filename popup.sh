@@ -11,24 +11,29 @@
 #   -f '#{?@is_popup,0,1}'
 #
 
+# get the current 'session_id' and 'window_id'
 arr=($(tmux display -p '#{session_id} #{window_id}'))
 sid="${arr[0]}"
 wid="${arr[1]}"
+
+# name of the popup session to associate with the current sid & wid
 session="_popup_${sid:1}_${wid:1}_"
 
 # arguments
 case "$1" in
 clear) # kill all the popup sessions
-	tmux ls -F '#{session_name}' -f '#{@is_popup}' | while read -r line; do
+	tmux ls -F '#{session_name}' -f '#{m:_popup_*,#{session_name}}' | while read -r line; do
 		tmux kill-session -t "$line"
 	done
 	exit 0
 	;;
 gc) # kill orphaned popup sessions
-	tmux ls -F '#{@src_sid} #{@src_wid} #{session_name}' -f '#{@is_popup}' | while read -r line; do
-		arr=($line)  # 0:src_sid, 1:src_wid, 2:session_name
-		windows="$(tmux lsw -a -F 'x' -f "#{&&:#{==:#{session_id},${arr[0]}},#{==:#{window_id},${arr[1]}}}")"
-		[ -z "$windows" ] && tmux kill-session -t "${arr[2]}"
+	tmux ls -F '#{session_name}' -f '#{m:_popup_*,#{session_name}}' | while read -r line; do
+		src="${line:7:-1}" # <src_sid>_<src_wid>
+		src_sid="\$${src%_*}"
+		src_wid="@${src#*_}"
+		windows="$(tmux lsw -a -F 'x' -f "#{&&:#{==:#{session_id},${src_sid}},#{==:#{window_id},${src_wid}}}")"
+		[ -z "$windows" ] && tmux kill-session -t "${line}"
 	done
 	exit 0
 	;;
@@ -43,12 +48,7 @@ if ! tmux has -t="$session" 2> /dev/null; then
 	# create a session to store popup windows into
 	tmux new -d -s "$session"
 
-	# custom session options
-	tmux set -t "$session" @src_sid "$sid"
-	tmux set -t "$session" @src_wid "$wid"
-	tmux set -t "$session" @is_popup 1
-
-	# regular session options
+	# session options
 	tmux set -t "$session" destroy-unattached off
 	tmux set -t "$session" status off
 

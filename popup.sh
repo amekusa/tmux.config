@@ -21,6 +21,12 @@ session="_popup_${sid:1}_${wid:1}_"
 
 # arguments
 case "$1" in
+kill) # kill popup session of the current window
+	if tmux has -t $session &> /dev/null; then
+		tmux kill-session -t "$session"
+	fi
+	exit 0
+	;;
 clear) # kill all the popup sessions
 	tmux ls -F '#{session_name}' -f '#{m:_popup_*,#{session_name}}' | while read -r line; do
 		tmux kill-session -t "$line"
